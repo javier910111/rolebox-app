@@ -91,6 +91,7 @@ JOB_DESCRIPTIONS = {
         'activities': ['동물에게 먹이 주기', '우리 청소하기', '건강 체크하기', '관람객 안내하기'],
         'skills': ['관찰력', '책임감', '동물 사랑', '체력'],
         'emoji': '🐘',
+        'image_path': 'images/jobs/사육사.jpg',
         'fun_fact': '동물원 사육사는 하루에 30종 이상의 동물을 돌봐요!'
     },
     '곤충학자': {
@@ -98,6 +99,7 @@ JOB_DESCRIPTIONS = {
         'activities': ['곤충 채집하기', '현미경으로 관찰하기', '생태 연구하기', '논문 작성하기'],
         'skills': ['탐구력', '인내심', '세심함', '기록력'],
         'emoji': '🦋',
+        'image_path': 'images/jobs/곤충학자.jpg',
         'fun_fact': '지구에는 100만 종 이상의 곤충이 살고 있어요!'
     },
     '조향사': {
@@ -105,6 +107,7 @@ JOB_DESCRIPTIONS = {
         'activities': ['향 재료 섞기', '새로운 향 개발하기', '향수 테스트하기', '고객 상담하기'],
         'skills': ['후각', '창의력', '집중력', '감성'],
         'emoji': '🌺',
+        'image_path': 'images/jobs/조향사.jpg',
         'fun_fact': '조향사는 3000가지 이상의 향을 구별할 수 있어요!'
     },
     '판사': {
@@ -129,11 +132,11 @@ JOB_DESCRIPTIONS = {
         'fun_fact': '비타민 C는 괴혈병을 예방해줘요!'
     },
     '스마트파머': {
-        'description': '스마트팜으로 농작물을 효율적으로 재배해요 ♻',
-        'activities': ['비타민 성분 분석하기', '실험하기', '건강 효과 연구하기', '제품 개발하기'],
-        'skills': ['분석력', '꼼꼼함', '과학적 사고', '집중력'],
-        'emoji': '💊',
-        'fun_fact': '비타민 C는 괴혈병을 예방해줘요!'
+        'description': '첨단 기술로 효율적으로 농작물을 재배해요 🌱',
+        'activities': ['센서 데이터 모니터링', '자동화 시스템 관리', '작물 상태 분석', '수확량 최적화'],
+        'skills': ['기술 활용력', '분석력', '농업 지식', '문제 해결력'],
+        'emoji': '🌱',
+        'fun_fact': '스마트팜은 물과 비료를 90% 절약할 수 있어요!'
     }
 }
 
@@ -198,6 +201,31 @@ def login_page():
         - `무지개유치원` / `rainbow123`
         """)
 
+def display_job_card_with_image(month, job_name, theme, is_completed):
+    """이미지가 포함된 직업 카드 표시"""
+    job_info = JOB_DESCRIPTIONS.get(job_name, {'emoji': '💼'})
+    
+    # 이미지 표시 시도
+    if 'image_path' in job_info:
+        try:
+            st.image(job_info['image_path'], width=200)
+        except:
+            # 이미지 로드 실패시 이모지 표시
+            st.markdown(f"<div style='text-align: center; font-size: 3rem;'>{job_info['emoji']}</div>", unsafe_allow_html=True)
+    else:
+        st.markdown(f"<div style='text-align: center; font-size: 3rem;'>{job_info['emoji']}</div>", unsafe_allow_html=True)
+    
+    # 카드 정보
+    card_class = "completed-job" if is_completed else "job-card"
+    st.markdown(f"""
+    <div class="{card_class}">
+        <h4 style="color: #333; text-align: center;">{month}</h4>
+        <p style="font-weight: bold; color: #2196F3; text-align: center;">{job_name}</p>
+        <p style="color: #666; font-size: 0.85em; text-align: center;">{theme}</p>
+        {'<p style="color: #4CAF50; font-weight: bold; text-align: center;">✅ 체험 완료!</p>' if is_completed else '<p style="color: #FF9800; text-align: center;">🎯 체험 대기</p>'}
+    </div>
+    """, unsafe_allow_html=True)
+
 def main_app():
     # 헤더
     col1, col2, col3 = st.columns([4, 2, 1])
@@ -244,22 +272,8 @@ def main_app():
                     theme = CAREER_PLAN[month]['theme']
                     is_completed = job_name in st.session_state.completed_jobs
                     
-                    # 직업 정보 가져오기
-                    job_info = JOB_DESCRIPTIONS.get(job_name, {'emoji': '💼', 'description': '흥미진진한 직업이에요!'})
-                    emoji = job_info['emoji']
-                    
-                    # 직업 카드
-                    card_class = "completed-job" if is_completed else "job-card"
-                    
-                    st.markdown(f"""
-                    <div class="{card_class}">
-                        <h3 style="text-align: center; margin-bottom: 1rem;">{emoji}</h3>
-                        <h4 style="color: #333; margin-bottom: 0.5rem;">{month}</h4>
-                        <p style="font-weight: bold; color: #2196F3; margin-bottom: 0.5rem;">{job_name}</p>
-                        <p style="color: #666; font-size: 0.85em; margin-bottom: 1rem;">{theme}</p>
-                        {'<p style="color: #4CAF50; font-weight: bold;">✅ 체험 완료!</p>' if is_completed else '<p style="color: #FF9800;">🎯 체험 대기</p>'}
-                    </div>
-                    """, unsafe_allow_html=True)
+                    # 이미지가 포함된 직업 카드 표시
+                    display_job_card_with_image(month, job_name, theme, is_completed)
                     
                     if st.button(f"🔍 {month} 자세히 보기", key=f"detail_{month}", use_container_width=True):
                         st.session_state.selected_month = month
